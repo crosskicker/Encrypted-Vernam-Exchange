@@ -3,66 +3,58 @@ import threading
 import random
 from cryptage.crypt import echange_cle_client, decode_str, code_str, echange_cle_serveur
 
-
-
-# Fonction pour recevoir des messages en continu depuis le serveur
-def receive_messages(client_socket,cle_p):
+# Function to continuously receive messages from the server
+def receive_messages(client_socket, cle_p):
     while True:
         try:
-            # On essaie de recevoir des données du serveur
+            # Try to receive data from the server
             data = client_socket.recv(1024)
             if data:
-                data = decode_str(data,cle_p)
+                # Decode the received message
+                data = decode_str(data, cle_p)
                 print(f"\nServer: {data}")
             else:
-                # Si aucune donnée reçue, on peut penser que la connexion est fermée
+                # Connection closed by the server
                 print("Connection closed by server.")
                 break
         except Exception as e:
             print(f"Error: {e}")
             break
 
-# Fonction principale pour le client
+# Main function for the client
 def client_program():
-    ip_server = '127.0.0.1'  # Adresse du serveur
-    port_server = 1111       # Port du serveur
+    ip_server = '127.0.0.1'  # Server address
+    port_server = 5656       # Server port
 
-    # Créer un socket client
+    # Create a client socket
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     
-    # Connexion au serveur
+    # Connect to the server
     client_socket.connect((ip_server, port_server))
     print("Connected to the server.")
 
-    #juste apres la connexion il faut des echange en dur qui vont permette le cryptage de la conversation
-############################################# ECHANGE DE CLE ####################################################
-
+    # Perform the key exchange for encrypted communication
     cle_p = echange_cle_client(client_socket)
 
-############################################# ECHANGE DE CLE ####################################################
-
-    # Démarrer un thread pour recevoir les messages
-    receive_thread = threading.Thread(target=receive_messages, args=(client_socket,cle_p,))
-    receive_thread.daemon = True  # Le thread se termine automatiquement lorsque le programme principal se termine
+    # Start a thread to receive messages from the server
+    receive_thread = threading.Thread(target=receive_messages, args=(client_socket, cle_p,))
+    receive_thread.daemon = True  # The thread will exit when the main program exits
     receive_thread.start()
 
-    
-
-    # Boucle pour envoyer des messages au serveur
+    # Loop to send messages to the server
     try:
         while True:
-            message = input("You: ")  # Entrer un message via le clavier
+            message = input("You: ")  # Enter a message via keyboard
             if message.lower() == 'quit':
-                break  # Quitter la boucle si l'utilisateur tape 'quit'
-            msg = code_str(message,cle_p)
-            client_socket.sendall(msg)#.encode('utf-8'))  # Envoyer le message au serveur
+                break  # Exit if the user types 'quit'
+            # Encrypt and send the message
+            msg = code_str(message, cle_p)
+            client_socket.sendall(msg)
     except KeyboardInterrupt:
         print("\nClient disconnected.")
     finally:
-        client_socket.close()  # Fermer le socket proprement
+        # Properly close the socket
+        client_socket.close()
 
-# Démarrer le client
+# Start the client program
 client_program()
-
-
-

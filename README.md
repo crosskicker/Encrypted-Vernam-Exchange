@@ -11,3 +11,5 @@ In a first cli : `python3 server.py`
 In a second cli : `python3 client.py`
 
 Now you can communicate between a server and a client with the Vernam  encryption
+
+To end a client or a server you need to use "quit".
