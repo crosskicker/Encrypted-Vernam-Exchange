@@ -4,7 +4,7 @@ This project permit to encrypt a communication between a client and a server wit
 
 ### Dowload the project
 
-git clone https://github.com/crosskicker/Vernam-encryption-exchange.git
+git clone https://github.com/crosskicker/Encrypted-Vernam-Exchange.git
 
 ### Run the project
 
